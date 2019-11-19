@@ -1,0 +1,13 @@
+service: aoc-slack-notifier
+provider:
+  name: aws
+  runtime: java11
+  timeout: 10
+  region: ${opt:region, 'eu-west-2'}
+package:
+  artifact: target/slack-notifier-0.0.1-SNAPSHOT-aws.jar
+functions:
+  dummy:
+    handler: com.ctl.aoc.slacknotifier.handlers.DummyHandler
+    environment:
+      FUNCTION_NAME: dummy
