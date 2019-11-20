@@ -9,6 +9,7 @@ import java.util.function.Function;
 public class DummyFunction implements Function<Dummy, Dummy> {
     @Override
     public Dummy apply(Dummy dummy) {
-        return new Dummy("Hello " + dummy.getName());
+        final String foo = System.getenv("FUNCTION_NAME");
+        return new Dummy("Hello " + dummy.getName()+ " " + foo);
     }
 }

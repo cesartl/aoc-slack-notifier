@@ -11,3 +11,40 @@ functions:
     handler: com.ctl.aoc.slacknotifier.handlers.DummyHandler
     environment:
       FUNCTION_NAME: dummy
+      DYNAMODB_TABLE: AOC_Polling_Event
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:Scan
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:UpdateItem
+          - dynamodb:DeleteItem
+        Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+resources:
+  Resources:
+    TodosDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: leaderBoardId
+            AttributeType: S
+          - AttributeName: yearEvent
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+          - AttributeName: data
+            AttributeType: S
+        KeySchema:
+          - AttributeName: leaderBoardId
+            KeyType: HASH
+          - AttributeName: yearEvent
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
