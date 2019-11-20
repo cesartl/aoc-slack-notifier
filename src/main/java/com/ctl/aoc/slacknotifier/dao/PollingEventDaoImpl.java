@@ -3,14 +3,13 @@ package com.ctl.aoc.slacknotifier.dao;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.ctl.aoc.slacknotifier.model.PollingEvent;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -18,12 +17,10 @@ import java.util.Optional;
 public class PollingEventDaoImpl implements PollingEventDao {
     private final AmazonDynamoDB dynamoDbClient;
     private final DynamoDBMapper mapper;
-    private final Clock clock;
 
-    public PollingEventDaoImpl(AmazonDynamoDB dynamoDbClient, Clock clock) {
+    public PollingEventDaoImpl(AmazonDynamoDB dynamoDbClient) {
         this.dynamoDbClient = dynamoDbClient;
         mapper = new DynamoDBMapper(dynamoDbClient);
-        this.clock = clock;
     }
 
     @Override
@@ -33,10 +30,7 @@ public class PollingEventDaoImpl implements PollingEventDao {
     }
 
     @Override
-    public Optional<PollingEvent> findLatest(String leaderBoardId, String yearEvent) {
-        final String identifier = PollingEvent.identifier(leaderBoardId, yearEvent);
-
-        final Instant now = Instant.now(clock);
+    public Optional<PollingEvent> findLatest(String leaderBoardId, String yearEvent, Instant now) {
 
         final Condition rangeKeyCondition = new Condition();
         rangeKeyCondition
@@ -47,8 +41,11 @@ public class PollingEventDaoImpl implements PollingEventDao {
         expression
                 .withHashKeyValues(PollingEvent.forHashValue(leaderBoardId, yearEvent))
                 .withRangeKeyCondition("timestamp", rangeKeyCondition)
-                .withLimit(1);
+                .withScanIndexForward(false)
+                .withLimit(2); //for some reason it goes into infinite loop if this is set to one
 
-        return mapper.query(PollingEvent.class, expression).stream().findFirst();
+        final PaginatedQueryList<PollingEvent> result = mapper.query(PollingEvent.class, expression);
+        System.out.println("aaa");
+        return result.stream().findFirst();
     }
 }

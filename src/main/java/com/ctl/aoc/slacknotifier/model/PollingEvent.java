@@ -16,7 +16,7 @@ public class PollingEvent {
 
     private String yearEvent;
 
-    @DynamoDBRangeKey
+    @DynamoDBRangeKey()
     private long timestamp;
 
     private AocLeaderboardResponse data;
