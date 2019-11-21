@@ -4,14 +4,19 @@ provider:
   runtime: java11
   timeout: 10
   region: ${opt:region, 'eu-west-2'}
+  environment:
+    DYNAMODB_TABLE: AOC_Polling_Event
 package:
   artifact: target/slack-notifier-0.0.1-SNAPSHOT-aws.jar
 functions:
-  dummy:
-    handler: com.ctl.aoc.slacknotifier.handlers.DummyHandler
+  polling:
+    handler: com.ctl.aoc.slacknotifier.handlers.PollingHandler
+    events:
+      - schedule: rate(1 minute)
     environment:
-      FUNCTION_NAME: dummy
-      DYNAMODB_TABLE: AOC_Polling_Event
+      AOC_LEADERBOARD_ID: ${opt:leaderboardid}
+      AOC_YEAR_EVENT: ${opt:year}
+      AOC_SESSION_ID: ${opt:sessionid}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -29,18 +34,12 @@ resources:
       DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
-          - AttributeName: leaderBoardId
-            AttributeType: S
-          - AttributeName: yearEvent
+          - AttributeName: identifier
             AttributeType: S
           - AttributeName: timestamp
             AttributeType: N
-          - AttributeName: data
-            AttributeType: S
         KeySchema:
-          - AttributeName: leaderBoardId
-            KeyType: HASH
-          - AttributeName: yearEvent
+          - AttributeName: identifier
             KeyType: HASH
           - AttributeName: timestamp
             KeyType: RANGE

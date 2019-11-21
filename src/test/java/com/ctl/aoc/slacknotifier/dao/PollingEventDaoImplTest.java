@@ -33,10 +33,7 @@ class PollingEventDaoImplTest {
 
     @BeforeEach
     void setUp() throws InterruptedException {
-        final AmazonDynamoDB dynamoDBClient = AmazonDynamoDBClientBuilder.standard()
-                .withEndpointConfiguration(dynamoDB.getEndpointConfiguration())
-                .withCredentials(dynamoDB.getCredentials())
-                .build();
+        final AmazonDynamoDB dynamoDBClient = dynamoDB.getClient();
         pollingEventDao = new PollingEventDaoImpl(dynamoDBClient);
 
         DynamoDBMapper mapper = new DynamoDBMapper(dynamoDBClient);

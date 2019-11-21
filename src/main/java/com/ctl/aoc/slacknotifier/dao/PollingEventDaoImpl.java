@@ -45,7 +45,6 @@ public class PollingEventDaoImpl implements PollingEventDao {
                 .withLimit(2); //for some reason it goes into infinite loop if this is set to one
 
         final PaginatedQueryList<PollingEvent> result = mapper.query(PollingEvent.class, expression);
-        System.out.println("aaa");
         return result.stream().findFirst();
     }
 }
