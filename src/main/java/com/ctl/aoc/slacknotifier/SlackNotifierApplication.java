@@ -8,12 +8,17 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
+
 @SpringBootApplication
 public class SlackNotifierApplication {
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
+        return builder
+                .setConnectTimeout(Duration.ofMillis(500))
+                .setReadTimeout(Duration.ofSeconds(2))
+                .build();
     }
 
     @Bean

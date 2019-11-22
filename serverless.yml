@@ -6,6 +6,16 @@ provider:
   region: ${opt:region, 'eu-west-2'}
   environment:
     DYNAMODB_TABLE: AOC_Polling_Event
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
 package:
   artifact: target/slack-notifier-0.0.1-SNAPSHOT-aws.jar
 functions:
@@ -14,19 +24,10 @@ functions:
     events:
       - schedule: rate(1 minute)
     environment:
+      FUNCTION_NAME: pollingFunction
       AOC_LEADERBOARD_ID: ${opt:leaderboardid}
       AOC_YEAR_EVENT: ${opt:year}
       AOC_SESSION_ID: ${opt:sessionid}
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:Query
-          - dynamodb:Scan
-          - dynamodb:GetItem
-          - dynamodb:PutItem
-          - dynamodb:UpdateItem
-          - dynamodb:DeleteItem
-        Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
 resources:
   Resources:
     TodosDynamoDbTable:
