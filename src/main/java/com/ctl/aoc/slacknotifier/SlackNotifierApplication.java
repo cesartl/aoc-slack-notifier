@@ -2,6 +2,9 @@ package com.ctl.aoc.slacknotifier;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import lombok.Builder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -24,6 +27,11 @@ public class SlackNotifierApplication {
     @Bean
     public AmazonDynamoDB amazonDynamoDB() {
         return AmazonDynamoDBClientBuilder.defaultClient();
+    }
+
+    @Bean
+    public AmazonSNS amazonSNS() {
+        return AmazonSNSClientBuilder.defaultClient();
     }
 
     public static void main(String[] args) {

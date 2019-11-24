@@ -1,12 +1,16 @@
 service: aoc-slack-notifier
+
 provider:
   name: aws
   runtime: java11
-  timeout: 10
+  timeout: 30
   region: ${opt:region, 'eu-west-2'}
-  environment:
-    DYNAMODB_TABLE: AOC_Polling_Event
   iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - SNS:Publish
+        - SNS:CreateTopic
+      Resource: { "Fn::Join": ["", ["arn:aws:sns:${self:provider.region}:", { "Ref": "AWS::AccountId" }, ":${self:custom.snsTopic}" ] ]  }
     - Effect: Allow
       Action:
         - dynamodb:Query
@@ -15,7 +19,12 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.dynamodbTable}"
+
+custom:
+  snsTopic: "${self:service}-${self:provider.stage}-compare-event-sns"
+  dynamodbTable: AOC_Polling_Event
+
 package:
   artifact: target/slack-notifier-0.0.1-SNAPSHOT-aws.jar
 functions:
@@ -28,11 +37,25 @@ functions:
       AOC_LEADERBOARD_ID: ${opt:leaderboardid}
       AOC_YEAR_EVENT: ${opt:year}
       AOC_SESSION_ID: ${opt:sessionid}
+      SNS_TOPIC: ${self:custom.snsTopic}
+  compare:
+    handler: com.ctl.aoc.slacknotifier.handlers.CompareHandler
+    environment:
+      FUNCTION_NAME: compareFunction
+    events:
+      - sns: ${self:custom.snsTopic}
+
 resources:
   Resources:
-    TodosDynamoDbTable:
+#    SnsTopic:
+#      Type: 'AWS::SNS::Topic'
+#      DeletionPolicy: Delete
+#      Properties:
+#        DisplayName: ${self:custom.snsTopic}
+#        TopicName: ${self:custom.snsTopic}
+    PollingDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
           - AttributeName: identifier
@@ -47,4 +70,4 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        TableName: ${self:custom.dynamodbTable}

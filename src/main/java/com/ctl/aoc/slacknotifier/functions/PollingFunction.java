@@ -1,9 +1,10 @@
 package com.ctl.aoc.slacknotifier.functions;
 
-import com.amazonaws.services.lambda.runtime.events.ScheduledEvent;
 import com.ctl.aoc.slacknotifier.ConfigVariables;
 import com.ctl.aoc.slacknotifier.client.AocClient;
+import com.ctl.aoc.slacknotifier.client.EventPublisher;
 import com.ctl.aoc.slacknotifier.dao.PollingEventDao;
+import com.ctl.aoc.slacknotifier.model.AocCompareEvent;
 import com.ctl.aoc.slacknotifier.model.AocLeaderboardResponse;
 import com.ctl.aoc.slacknotifier.model.PollingEvent;
 import org.apache.logging.log4j.LogManager;
@@ -14,21 +15,23 @@ import reactor.core.publisher.Flux;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Component
 public class PollingFunction implements Function<Flux<Map>, Flux<PollingEvent>> {
 
-    static final Logger logger = LogManager.getLogger(PollingFunction.class);
+    private static final Logger logger = LogManager.getLogger(PollingFunction.class);
 
     private final PollingEventDao pollingEventDao;
     private final AocClient aocClient;
+    private final EventPublisher eventPublisher;
 
     @Autowired
-    public PollingFunction(PollingEventDao pollingEventDao, AocClient aocClient) {
+    public PollingFunction(PollingEventDao pollingEventDao, AocClient aocClient, EventPublisher eventPublisher) {
         this.pollingEventDao = pollingEventDao;
         this.aocClient = aocClient;
+        this.eventPublisher = eventPublisher;
     }
 
 //    @Override
@@ -59,6 +62,13 @@ public class PollingFunction implements Function<Flux<Map>, Flux<PollingEvent>> 
                     .timestamp(Instant.now().toEpochMilli())
                     .data(aocResponse)
                     .build();
+
+            //if we find a previous event we send it for comparison
+            pollingEventDao.findLatest(leaderboardId, yearEvent, Instant.now())
+                    .map(from -> AocCompareEvent.builder().from(from).to(pollingEvent).build())
+                    .ifPresent(eventPublisher::publish);
+            ;
+
             return pollingEventDao.save(pollingEvent);
         });
     }
