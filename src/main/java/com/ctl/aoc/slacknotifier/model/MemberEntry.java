@@ -2,13 +2,11 @@ package com.ctl.aoc.slacknotifier.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.Map;
 
-@Getter
-@Setter
+@Data
 @DynamoDBDocument
 public class MemberEntry {
     private String id;
