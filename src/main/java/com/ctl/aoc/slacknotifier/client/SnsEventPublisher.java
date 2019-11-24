@@ -10,6 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Not used for now but might be useful later
+ */
 //@Component
 public class SnsEventPublisher implements EventPublisher {
 

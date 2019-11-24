@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import java.util.Map;
 
+/**
+ * This class represents the return data sent by AOC when querying a leaderboard
+ */
 @Getter
 @Setter
 @DynamoDBDocument
@@ -17,5 +20,8 @@ public class AocLeaderboardResponse {
 
     private String event;
 
+    /**
+     * A map from a memberId to {@link MemberEntry}
+     */
     private Map<String, MemberEntry> members;
 }

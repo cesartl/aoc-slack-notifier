@@ -16,6 +16,10 @@ import reactor.core.publisher.Flux;
 import java.util.Optional;
 import java.util.function.Function;
 
+/**
+ * This function is responsible for reading a {@link AocCompareEvent} from SQS, check if there are has been
+ * any changes in the leaderboard, and write to Slack via {@link SlackLeaderboardNotifier} if needed.
+ */
 @Component
 public class CompareFunction implements Function<Flux<SQSEvent>, Void> {
     private static final Logger logger = LogManager.getLogger(CompareFunction.class);

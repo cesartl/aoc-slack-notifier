@@ -23,6 +23,9 @@ public class MemberEntry {
 
     private int stars;
 
+    /**
+     * The last timestamp this user won a star, we use this field to know if there has been new star for this user
+     */
     @JsonProperty("last_star_ts")
     private long lastStarTimestamp;
 

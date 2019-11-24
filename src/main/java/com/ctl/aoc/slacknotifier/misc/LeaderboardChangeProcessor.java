@@ -7,6 +7,9 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Encapsulate the logic to compare two {@link PollingEvent} and generate {@link LeaderboardChangeEvent}
+ */
 public class LeaderboardChangeProcessor {
 
     private static final Logger logger = LogManager.getLogger(LeaderboardChangeProcessor.class);

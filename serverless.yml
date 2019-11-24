@@ -13,11 +13,11 @@ provider:
         - sqs:ReceiveMessage
         - sqs:SendMessage
       Resource: arn:aws:sqs:*:*:${self:custom.sqsQueue}
-    - Effect: Allow
-      Action:
-        - SNS:Publish
-        - SNS:CreateTopic
-      Resource: { "Fn::Join": ["", ["arn:aws:sns:${self:provider.region}:", { "Ref": "AWS::AccountId" }, ":${self:custom.snsTopic}" ] ]  }
+#    - Effect: Allow
+#      Action:
+#        - SNS:Publish
+#        - SNS:CreateTopic
+#      Resource: { "Fn::Join": ["", ["arn:aws:sns:${self:provider.region}:", { "Ref": "AWS::AccountId" }, ":${self:custom.snsTopic}" ] ]  }
     - Effect: Allow
       Action:
         - dynamodb:Query
@@ -29,7 +29,7 @@ provider:
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.dynamodbTable}"
 
 custom:
-  snsTopic: "${self:service}-${self:provider.stage}-compare-event-sns"
+#  snsTopic: "${self:service}-${self:provider.stage}-compare-event-sns"
   sqsQueue: "${self:service}-${self:provider.stage}-compare-event-sqs"
   dynamodbTable: AOC_Polling_Event
 
@@ -45,7 +45,7 @@ functions:
       AOC_LEADERBOARD_ID: ${opt:leaderboardid}
       AOC_YEAR_EVENT: ${opt:year}
       AOC_SESSION_ID: ${opt:sessionid}
-      SNS_TOPIC: ${self:custom.snsTopic}
+#      SNS_TOPIC: ${self:custom.snsTopic}
       SQS_QUEUE_NAME: ${self:custom.sqsQueue}
   compare:
     handler: com.ctl.aoc.slacknotifier.handlers.CompareHandler

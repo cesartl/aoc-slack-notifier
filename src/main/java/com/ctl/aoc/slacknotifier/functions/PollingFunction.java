@@ -15,9 +15,17 @@ import reactor.core.publisher.Flux;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
+/**
+ * This is the function which is responsible for
+ * <p>
+ * - Calling the AOC API to get the score information modelled as a {@link PollingEvent}
+ * <p>
+ * - Store the historical {@link PollingEvent} in Dynamo DB
+ * <p>
+ * - Send a {@link AocCompareEvent} to SQS so that it can be processed by {@link CompareFunction}
+ */
 @Component
 public class PollingFunction implements Function<Flux<Map>, Flux<PollingEvent>> {
 
@@ -34,22 +42,8 @@ public class PollingFunction implements Function<Flux<Map>, Flux<PollingEvent>> 
         this.eventPublisher = eventPublisher;
     }
 
-//    @Override
-//    public void accept(Flux<ScheduledEvent> scheduledEventFlux) {
-//        scheduledEventFlux.map(scheduledEvent -> {
-//            System.out.println("Received scheduled event " + scheduledEvent.getId());
-//            final String leaderboardId = System.getenv(ConfigVariables.AOC_LEADERBOARD_ID);
-//            final String yearEvent = System.getenv(ConfigVariables.AOC_YEAR_EVENT);
-//            final String sessionId = System.getenv(ConfigVariables.AOC_SESSION_ID);
-//            final PollingEvent pollingEvent = aocClient.pollLeaderboard(yearEvent, leaderboardId, sessionId);
-//            return pollingEventDao.save(pollingEvent);
-//        }).blockFirst();
-//    }
-
-
     @Override
     public Flux<PollingEvent> apply(Flux<Map> flux) {
-        logger.info("Calling function");
         return flux.map(map -> {
             logger.info("Received scheduled event " + map.keySet());
             final String leaderboardId = System.getenv(ConfigVariables.AOC_LEADERBOARD_ID);
