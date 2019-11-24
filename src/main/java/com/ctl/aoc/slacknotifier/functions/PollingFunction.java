@@ -64,9 +64,13 @@ public class PollingFunction implements Function<Flux<Map>, Flux<PollingEvent>> 
                     .build();
 
             //if we find a previous event we send it for comparison
+            logger.info("Searching latest event in dynamoDB");
             pollingEventDao.findLatest(leaderboardId, yearEvent, Instant.now())
                     .map(from -> AocCompareEvent.builder().from(from).to(pollingEvent).build())
-                    .ifPresent(eventPublisher::publish);
+                    .ifPresent(event -> {
+                        logger.info("Found previous event in dynamoDB");
+                        eventPublisher.publish(event);
+                    });
             ;
 
             return pollingEventDao.save(pollingEvent);

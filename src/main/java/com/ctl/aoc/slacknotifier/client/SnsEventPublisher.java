@@ -2,7 +2,6 @@ package com.ctl.aoc.slacknotifier.client;
 
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.model.CreateTopicResult;
-import com.amazonaws.services.sns.model.PublishRequest;
 import com.ctl.aoc.slacknotifier.ConfigVariables;
 import com.ctl.aoc.slacknotifier.model.AocCompareEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,9 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class SnsEventPublisher implements EventPublisher {
 
     private static final Logger logger = LogManager.getLogger(SnsEventPublisher.class);
@@ -41,7 +39,7 @@ public class SnsEventPublisher implements EventPublisher {
             createSnsTopicArn();
             final String jsonString = mapper.writeValueAsString(event);
             logger.info("Publishing to topic: " + snsTopicArn);
-            final PublishRequest publishRequest = new PublishRequest();
+            logger.info("Message body: " + jsonString);
             snsClient.publish(snsTopicArn, jsonString);
         } catch (JsonProcessingException e) {
             logger.error("Could not write event to JSON", e);

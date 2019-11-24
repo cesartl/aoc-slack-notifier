@@ -3,9 +3,16 @@ service: aoc-slack-notifier
 provider:
   name: aws
   runtime: java11
-  timeout: 30
+  timeout: 20
   region: ${opt:region, 'eu-west-2'}
   iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:CreateQueue
+        - sqs:DeleteMessage
+        - sqs:ReceiveMessage
+        - sqs:SendMessage
+      Resource: arn:aws:sqs:*:*:${self:custom.sqsQueue}
     - Effect: Allow
       Action:
         - SNS:Publish
@@ -23,6 +30,7 @@ provider:
 
 custom:
   snsTopic: "${self:service}-${self:provider.stage}-compare-event-sns"
+  sqsQueue: "${self:service}-${self:provider.stage}-compare-event-sqs"
   dynamodbTable: AOC_Polling_Event
 
 package:
@@ -38,25 +46,37 @@ functions:
       AOC_YEAR_EVENT: ${opt:year}
       AOC_SESSION_ID: ${opt:sessionid}
       SNS_TOPIC: ${self:custom.snsTopic}
+      SQS_QUEUE_NAME: ${self:custom.sqsQueue}
   compare:
     handler: com.ctl.aoc.slacknotifier.handlers.CompareHandler
     environment:
       FUNCTION_NAME: compareFunction
     events:
-      - sns: ${self:custom.snsTopic}
+      - sqs:
+          arn: { "Fn::Join": ["", ["arn:aws:sqs:${self:provider.region}:", { "Ref": "AWS::AccountId" }, ":${self:custom.sqsQueue}" ] ]  }
+          batchSize: 2
+#      - sns: ${self:custom.snsTopic}
 
 resources:
   Resources:
-#    SnsTopic:
-#      Type: 'AWS::SNS::Topic'
-#      DeletionPolicy: Delete
-#      Properties:
-#        DisplayName: ${self:custom.snsTopic}
-#        TopicName: ${self:custom.snsTopic}
+    #    SnsTopic:
+    #      Type: 'AWS::SNS::Topic'
+    #      DeletionPolicy: Delete
+    #      Properties:
+    #        DisplayName: ${self:custom.snsTopic}
+    #        TopicName: ${self:custom.snsTopic}
+    SQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.sqsQueue}
+        MessageRetentionPeriod: 120
+        VisibilityTimeout: 30
+
     PollingDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Delete
       Properties:
+        BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: identifier
             AttributeType: S
@@ -67,7 +87,4 @@ resources:
             KeyType: HASH
           - AttributeName: timestamp
             KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
         TableName: ${self:custom.dynamodbTable}

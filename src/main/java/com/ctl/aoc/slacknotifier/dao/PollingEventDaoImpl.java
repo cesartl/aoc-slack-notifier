@@ -8,6 +8,8 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.ctl.aoc.slacknotifier.model.PollingEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -15,6 +17,9 @@ import java.util.Optional;
 
 @Component
 public class PollingEventDaoImpl implements PollingEventDao {
+
+    private static final Logger logger = LogManager.getLogger(PollingEventDaoImpl.class);
+
     private final AmazonDynamoDB dynamoDbClient;
     private final DynamoDBMapper mapper;
 
@@ -44,6 +49,7 @@ public class PollingEventDaoImpl implements PollingEventDao {
                 .withScanIndexForward(false)
                 .withLimit(2); //for some reason it goes into infinite loop if this is set to one
 
+        logger.info("Running DynamoDB query ");
         final PaginatedQueryList<PollingEvent> result = mapper.query(PollingEvent.class, expression);
         return result.stream().findFirst();
     }
