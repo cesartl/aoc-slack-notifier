@@ -6,7 +6,7 @@ import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-import lombok.Builder;
+import com.github.seratch.jslack.Slack;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -39,6 +39,11 @@ public class SlackNotifierApplication {
     @Bean
     public AmazonSNS amazonSNS() {
         return AmazonSNSClientBuilder.defaultClient();
+    }
+
+    @Bean
+    public Slack slack() {
+        return Slack.getInstance();
     }
 
     public static void main(String[] args) {

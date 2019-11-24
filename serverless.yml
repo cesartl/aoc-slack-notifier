@@ -51,6 +51,7 @@ functions:
     handler: com.ctl.aoc.slacknotifier.handlers.CompareHandler
     environment:
       FUNCTION_NAME: compareFunction
+      SLACK_TOKEN: ${opt:slackToken}
     events:
       - sqs:
           arn: { "Fn::Join": ["", ["arn:aws:sqs:${self:provider.region}:", { "Ref": "AWS::AccountId" }, ":${self:custom.sqsQueue}" ] ]  }

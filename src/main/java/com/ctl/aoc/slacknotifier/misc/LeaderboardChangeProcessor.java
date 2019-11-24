@@ -10,6 +10,9 @@ public class LeaderboardChangeProcessor {
     public static LeaderboardChangeEvent computeChanges(AocCompareEvent aocCompareEvent) {
         final LeaderboardChangeEvent.LeaderboardChangeEventBuilder builder = LeaderboardChangeEvent.builder();
 
+        builder.yearEvent(aocCompareEvent.getTo().getYearEvent());
+        builder.leaderboardId(aocCompareEvent.getTo().getLeaderBoardId());
+
         final AocLeaderboardResponse oldResponse = aocCompareEvent.getFrom().getData();
         final AocLeaderboardResponse newResponse = aocCompareEvent.getTo().getData();
 
@@ -43,7 +46,7 @@ public class LeaderboardChangeProcessor {
     }
 
     /**
-     * Returns a map from [Member ID] to [Rank] (0 being the highest entry)
+     * Returns a map from [Member ID] to [Rank] (1 being the highest entry)
      *
      * @param members
      * @param comparator
@@ -55,7 +58,7 @@ public class LeaderboardChangeProcessor {
                 .collect(Collectors.toList());
         final Map<String, Integer> sortedMap = new HashMap<>();
         for (int i = 0; i < sorted.size(); i++) {
-            sortedMap.put(sorted.get(i).getId(), i);
+            sortedMap.put(sorted.get(i).getId(), i + 1);
         }
         return sortedMap;
     }

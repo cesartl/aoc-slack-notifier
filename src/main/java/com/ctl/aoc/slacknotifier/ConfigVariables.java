@@ -9,4 +9,5 @@ public final class ConfigVariables {
     public static final String AOC_SESSION_ID = "AOC_SESSION_ID";
     public static final String SNS_TOPIC = "SNS_TOPIC";
     public static final String SQS_QUEUE_NAME = "SQS_QUEUE_NAME";
+    public static final String SLACK_TOKEN = "SLACK_TOKEN";
 }
