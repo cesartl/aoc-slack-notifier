@@ -30,9 +30,14 @@ public class CompareFunction implements Function<Flux<SQSEvent>, Void> {
     }
 
     private void processMessage(SQSEvent.SQSMessage message) {
+        logger.info("Processing message " + message.getMessageId());
         try {
             final AocCompareEvent compareEvent = mapper.readValue(message.getBody(), AocCompareEvent.class);
             final LeaderboardChangeEvent leaderboardChangeEvent = LeaderboardChangeProcessor.computeChanges(compareEvent);
+            logger.info(String.format("There are %d changes for [year=%s, leaderBoard=%s]",
+                    leaderboardChangeEvent.getMemberEvents().size()),
+                    leaderboardChangeEvent.getYearEvent(),
+                    leaderboardChangeEvent.getLeaderboardId());
             if (!leaderboardChangeEvent.getMemberEvents().isEmpty()) {
                 slackLeaderboardNotifier.notify(leaderboardChangeEvent);
             }
@@ -44,7 +49,7 @@ public class CompareFunction implements Function<Flux<SQSEvent>, Void> {
     @Override
     public Void apply(Flux<SQSEvent> sqsEventFlux) {
         final SQSEvent sqsEvent = sqsEventFlux.blockFirst();
-        logger.info("Received SQS event");
+        logger.info(String.format("Received SQS event, will process %d messages", sqsEvent.getRecords().size()));
         Optional.ofNullable(sqsEvent).map(SQSEvent::getRecords).ifPresent(x -> x.forEach(this::processMessage));
         return null;
     }

@@ -1,11 +1,15 @@
 package com.ctl.aoc.slacknotifier.misc;
 
 import com.ctl.aoc.slacknotifier.model.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class LeaderboardChangeProcessor {
+
+    private static final Logger logger = LogManager.getLogger(LeaderboardChangeProcessor.class);
 
     public static LeaderboardChangeEvent computeChanges(AocCompareEvent aocCompareEvent) {
         final LeaderboardChangeEvent.LeaderboardChangeEventBuilder builder = LeaderboardChangeEvent.builder();
