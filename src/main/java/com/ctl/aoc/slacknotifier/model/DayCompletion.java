@@ -14,4 +14,15 @@ public class DayCompletion {
 
     @JsonProperty("2")
     private CompletionInfo part2;
+
+    public int numberOfStars() {
+        int stars = 0;
+        if (part1 != null) {
+            stars++;
+            if (part2 != null) {
+                stars++;
+            }
+        }
+        return stars;
+    }
 }
