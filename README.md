@@ -8,7 +8,7 @@ more private leaderboards.
 This application will poll the AOC API, store the data in a DynamoDB and notify a Slack channel of your choice
 if there has been a change in the leaderboard. 
 
-`<TODO Screenshot of bot message>`
+![Aws architecture](AocNotifierSlackExample.png?sanitize=true "Aws Architecture")
 
 ## How it works
 
@@ -16,7 +16,7 @@ This projects runs on AWS and uses the following component:
 
 * A Lambda to poll adventofcode.com API
 * DynamoDB to store historical data
-* A Lambda to compare the latest two polling data
+* A Lambda to compare the latest two polling events
 * An SQS queue to pass data between the two lambdas
 
 ![Aws architecture](Aoc-slack-notifier.svg?sanitize=true "Aws Architecture")
@@ -34,7 +34,8 @@ To run this project you need to do the following:
 
 * Create an AWS account and and IAM user configured in your `~/.aws/credentials` file. See [AWS tutorial](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) for help
 * Install Serverless via npm as explained [here](https://github.com/serverless/serverless#quick-start)
-* [Create a Slack Incoming Webhook](https://api.slack.com/messaging/webhooks) in your Slack environment and make sure you know the token.
+* [Create a Slack Incoming Webhook](https://api.slack.com/messaging/webhooks) in your Slack environment and make sure you know the token. If your slack
+webhook is `https://hooks.slack.com/services/abc/123` then your token is `abc/123`
 * You are member of a AOC leaderboard and you know the id, typically `https://adventofcode.com/2019/leaderboard/private/view/<id>`
 * You are logged in adventofcode.com and you know your sessionId (to get it just inspect the network and look at the `cookie` header: e.g. `session=123...`)
 

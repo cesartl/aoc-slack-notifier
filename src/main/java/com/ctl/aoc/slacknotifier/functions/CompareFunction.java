@@ -43,7 +43,7 @@ public class CompareFunction implements Function<Flux<SQSEvent>, Void> {
                     leaderboardChangeEvent.getYearEvent(),
                     leaderboardChangeEvent.getLeaderboardId());
             if (!leaderboardChangeEvent.getMemberEvents().isEmpty()) {
-                slackLeaderboardNotifier.notify(leaderboardChangeEvent);
+                slackLeaderboardNotifier.notifyLeaderboardChange(leaderboardChangeEvent);
             }
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Could not parse JSON object as AocCompareEvent.class", e);

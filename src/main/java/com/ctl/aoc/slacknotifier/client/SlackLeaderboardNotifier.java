@@ -27,7 +27,7 @@ public class SlackLeaderboardNotifier implements LeaderboardNotifier {
     }
 
     @Override
-    public void notify(LeaderboardChangeEvent leaderboardChangeEvent) {
+    public void notifyLeaderboardChange(LeaderboardChangeEvent leaderboardChangeEvent) {
         try {
             final Payload payload = buildSlackPayload(leaderboardChangeEvent);
             final String slackToken = System.getenv(ConfigVariables.SLACK_TOKEN);
