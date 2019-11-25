@@ -8,8 +8,8 @@ more private leaderboards.
 This application will poll the AOC API, store the data in a DynamoDB and notify a Slack channel of your choice
 if there has been a change in the leaderboard. 
 
-![Aws architecture](AocNotifierSlackExample.png?sanitize=true "Aws Architecture")
 
+![Example](AocNotifierSlackExample.png "Example")
 ## How it works
 
 This projects runs on AWS and uses the following component:
@@ -19,7 +19,7 @@ This projects runs on AWS and uses the following component:
 * A Lambda to compare the latest two polling events
 * An SQS queue to pass data between the two lambdas
 
-![Example](Aoc-slack-notifier.svg "Example")
+![Aws architecture](Aoc-slack-notifier.svg?sanitize=true "Aws Architecture")
 
 This project also uses the following frameworks:
 
