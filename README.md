@@ -46,6 +46,12 @@ In the folder where you have checked out this project run the following command:
 serverless deploy --leaderboardid <leaderboardId> --year <year e.g '2018'> --slackToken <slackToken> --sessionid <aocSessionId>
 ```
 
+To remove all AWS resources simply run
+
+```%shell script
+serverless remove --leaderboardid <leaderboardId> --year <year e.g '2018'> --slackToken <slackToken> --sessionid <aocSessionId>
+```
+
 ## TODO
 
 * write more tests
