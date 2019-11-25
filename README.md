@@ -19,7 +19,7 @@ This projects runs on AWS and uses the following component:
 * A Lambda to compare the latest two polling data
 * An SQS queue to pass data between the two lambdas
 
-![Aws architecture](Aoc-slack-notifier.svg?raw=true "Aws Architecture")
+![Aws architecture](Aoc-slack-notifier.svg?sanitize=true "Aws Architecture")
 
 This project also uses the following frameworks:
 
