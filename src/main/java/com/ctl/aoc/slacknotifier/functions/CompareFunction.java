@@ -39,9 +39,9 @@ public class CompareFunction implements Function<Flux<SQSEvent>, Void> {
             final AocCompareEvent compareEvent = mapper.readValue(message.getBody(), AocCompareEvent.class);
             final LeaderboardChangeEvent leaderboardChangeEvent = LeaderboardChangeProcessor.computeChanges(compareEvent);
             logger.info(String.format("There are %d changes for [year=%s, leaderBoard=%s]",
-                    leaderboardChangeEvent.getMemberEvents().size()),
+                    leaderboardChangeEvent.getMemberEvents().size(),
                     leaderboardChangeEvent.getYearEvent(),
-                    leaderboardChangeEvent.getLeaderboardId());
+                    leaderboardChangeEvent.getLeaderboardId()));
             if (!leaderboardChangeEvent.getMemberEvents().isEmpty()) {
                 slackLeaderboardNotifier.notifyLeaderboardChange(leaderboardChangeEvent);
             }

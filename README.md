@@ -54,15 +54,9 @@ serverless remove --leaderboardid <leaderboardId> --year <year e.g '2018'> --sla
 ```
 
 The polling uses the cron expression `0 */1 * * ? *` by default (i.e. every hour). If you want to change this just
-edit `serverless.yml`:
+add a `-schedule 'cron(<write cron here>)'` argument to the deploy command.
+:
 
-```yaml
-functions:
-  polling:
-    handler: com.ctl.aoc.slacknotifier.handlers.PollingHandler
-    events:
-      - schedule: cron(0 */1 * * ? *) #change if you want to poll more often
-```
 
 ## TODO
 

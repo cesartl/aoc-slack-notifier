@@ -3,8 +3,10 @@ package com.ctl.aoc.slacknotifier.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * This class represent an event where we fetched AOC leaderboard information for a specific year, leaderboard id
@@ -14,6 +16,8 @@ import lombok.Data;
 @DynamoDBTable(tableName = "AOC_Polling_Event")
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PollingEvent {
     private String leaderBoardId;
 

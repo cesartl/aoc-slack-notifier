@@ -1,7 +1,6 @@
 package com.ctl.aoc.slacknotifier.dao;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
@@ -79,6 +78,12 @@ class PollingEventDaoImplTest {
         pollingEventDao.save(PollingEvent.builder().leaderBoardId("251939").timestamp(100).yearEvent("2018").build());
         pollingEventDao.save(PollingEvent.builder().leaderBoardId("251939").timestamp(300).yearEvent("2018").build());
 
+        pollingEventDao.save(PollingEvent.builder().leaderBoardId("251939").timestamp(250).yearEvent("2019").build());
+        pollingEventDao.save(PollingEvent.builder().leaderBoardId("251939").timestamp(150).yearEvent("2019").build());
+        pollingEventDao.save(PollingEvent.builder().leaderBoardId("251939").timestamp(350).yearEvent("2019").build());
+
+        // 2018
+
         assertThat(pollingEventDao.findLatest("251939", "2018", Instant.ofEpochMilli(400))).hasValueSatisfying(event -> {
             assertThat(event.getTimestamp()).isEqualTo(300);
         });
@@ -96,5 +101,25 @@ class PollingEventDaoImplTest {
         });
 
         assertThat(pollingEventDao.findLatest("251939", "2018", Instant.ofEpochMilli(50))).isEmpty();
+
+        // --- 2019
+
+        assertThat(pollingEventDao.findLatest("251939", "2019", Instant.ofEpochMilli(400))).hasValueSatisfying(event -> {
+            assertThat(event.getTimestamp()).isEqualTo(350);
+        });
+
+        assertThat(pollingEventDao.findLatest("251939", "2019", Instant.ofEpochMilli(300))).hasValueSatisfying(event -> {
+            assertThat(event.getTimestamp()).isEqualTo(250);
+        });
+
+        assertThat(pollingEventDao.findLatest("251939", "2019", Instant.ofEpochMilli(250))).hasValueSatisfying(event -> {
+            assertThat(event.getTimestamp()).isEqualTo(250);
+        });
+
+        assertThat(pollingEventDao.findLatest("251939", "2019", Instant.ofEpochMilli(150))).hasValueSatisfying(event -> {
+            assertThat(event.getTimestamp()).isEqualTo(150);
+        });
+
+        assertThat(pollingEventDao.findLatest("251939", "2019", Instant.ofEpochMilli(50))).isEmpty();
     }
 }
