@@ -54,7 +54,7 @@ polling:
       slackToken: '<the slack token mentioned above>'
 ```
 
-You can poll multiple leaderboard by adding more elements to the `leaderboards` list:
+You can poll multiple leaderboards by adding more elements to the `leaderboards` list:
 
 ```yaml
 polling:
