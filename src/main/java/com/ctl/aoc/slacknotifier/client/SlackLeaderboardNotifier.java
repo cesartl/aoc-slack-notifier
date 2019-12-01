@@ -1,6 +1,5 @@
 package com.ctl.aoc.slacknotifier.client;
 
-import com.ctl.aoc.slacknotifier.ConfigVariables;
 import com.ctl.aoc.slacknotifier.model.LeaderboardChangeEvent;
 import com.ctl.aoc.slacknotifier.model.LeaderboardMemberChange;
 import com.ctl.aoc.slacknotifier.util.Aoc;
@@ -27,10 +26,9 @@ public class SlackLeaderboardNotifier implements LeaderboardNotifier {
     }
 
     @Override
-    public void notifyLeaderboardChange(LeaderboardChangeEvent leaderboardChangeEvent) {
+    public void notifyLeaderboardChange(LeaderboardChangeEvent leaderboardChangeEvent, String slackToken) {
         try {
             final Payload payload = buildSlackPayload(leaderboardChangeEvent);
-            final String slackToken = System.getenv(ConfigVariables.SLACK_TOKEN);
             final String url = buildSlackWebHook(slackToken);
             slack.send(url, payload);
         } catch (IOException e) {

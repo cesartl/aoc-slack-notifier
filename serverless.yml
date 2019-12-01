@@ -42,8 +42,6 @@ functions:
       - schedule: ${opt:schedule, 'cron(0 */1 * * ? *)'}
     environment:
       FUNCTION_NAME: pollingFunction
-      AOC_LEADERBOARD_ID: ${opt:leaderboardid}
-      AOC_YEAR_EVENT: ${opt:year}
       AOC_SESSION_ID: ${opt:sessionid}
 #      SNS_TOPIC: ${self:custom.snsTopic}
       SQS_QUEUE_NAME: ${self:custom.sqsQueue}

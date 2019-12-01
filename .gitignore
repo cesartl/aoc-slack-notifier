@@ -131,3 +131,4 @@ buildNumber.properties
 # End of https://www.gitignore.io/api/java,maven,intellij
 
 deploy*.sh
+application-cesar.yml

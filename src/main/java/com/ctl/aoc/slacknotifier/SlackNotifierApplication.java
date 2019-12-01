@@ -6,9 +6,11 @@ import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.ctl.aoc.slacknotifier.model.PollingConfiguration;
 import com.github.seratch.jslack.Slack;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
@@ -44,6 +46,12 @@ public class SlackNotifierApplication {
     @Bean
     public Slack slack() {
         return Slack.getInstance();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "polling")
+    public PollingConfiguration pollingConfiguration() {
+        return new PollingConfiguration();
     }
 
     public static void main(String[] args) {

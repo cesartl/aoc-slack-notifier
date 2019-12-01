@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -43,7 +42,7 @@ public class CompareFunction implements Function<Flux<SQSEvent>, Void> {
                     leaderboardChangeEvent.getYearEvent(),
                     leaderboardChangeEvent.getLeaderboardId()));
             if (!leaderboardChangeEvent.getMemberEvents().isEmpty()) {
-                slackLeaderboardNotifier.notifyLeaderboardChange(leaderboardChangeEvent);
+                slackLeaderboardNotifier.notifyLeaderboardChange(leaderboardChangeEvent, compareEvent.getSlackToken());
             }
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Could not parse JSON object as AocCompareEvent.class", e);
@@ -53,8 +52,11 @@ public class CompareFunction implements Function<Flux<SQSEvent>, Void> {
     @Override
     public Void apply(Flux<SQSEvent> sqsEventFlux) {
         final SQSEvent sqsEvent = sqsEventFlux.blockFirst();
+        if (sqsEvent == null || sqsEvent.getRecords() == null) {
+            throw new IllegalArgumentException("SQS event has no records");
+        }
         logger.info(String.format("Received SQS event, will process %d messages", sqsEvent.getRecords().size()));
-        Optional.ofNullable(sqsEvent).map(SQSEvent::getRecords).ifPresent(x -> x.forEach(this::processMessage));
+        sqsEvent.getRecords().forEach(this::processMessage);
         return null;
     }
 }

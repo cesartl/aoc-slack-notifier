@@ -10,4 +10,5 @@ import lombok.*;
 public class AocCompareEvent {
     private PollingEvent from;
     private PollingEvent to;
+    private String slackToken;
 }

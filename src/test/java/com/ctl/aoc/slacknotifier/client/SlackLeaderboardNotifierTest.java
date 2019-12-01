@@ -17,6 +17,7 @@ class SlackLeaderboardNotifierTest {
     @Ignore
     void testNotifyLeaderboardChange() throws Exception {
         Slack slack = Slack.getInstance();
+        String slackToken = "...";
 
         LeaderboardNotifier leaderboardNotifier = new SlackLeaderboardNotifier(slack);
 
@@ -39,6 +40,6 @@ class SlackLeaderboardNotifierTest {
                         .build())
                 .build();
 
-        leaderboardNotifier.notifyLeaderboardChange(event);
+        leaderboardNotifier.notifyLeaderboardChange(event, slackToken);
     }
 }

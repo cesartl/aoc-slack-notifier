@@ -1,0 +1,8 @@
+polling:
+  leaderboards:
+    - leaderboardId: '***'
+      year: '***'
+      slackToken: '***'
+    - leaderboardId: '***'
+      year: '***'
+      slackToken: '***'

@@ -32,6 +32,8 @@ This project also uses the following frameworks:
 
 To run this project you need to do the following:
 
+* JDK 11 or above
+* Maven
 * Create an AWS account and and IAM user configured in your `~/.aws/credentials` file. See [AWS tutorial](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) for help
 * Install Serverless via npm as explained [here](https://github.com/serverless/serverless#quick-start)
 * [Create a Slack Incoming Webhook](https://api.slack.com/messaging/webhooks) in your Slack environment and make sure you know the token. If your slack
@@ -42,6 +44,12 @@ webhook is `https://hooks.slack.com/services/abc/123` then your token is `abc/12
 ## How to run
 
 In the folder where you have checked out this project run the following command:
+
+First you have to build the project with Maven:
+
+```shell script
+mvn package
+```
 
 ```shell script
 serverless deploy --leaderboardid <leaderboardId> --year <year e.g '2018'> --slackToken <slackToken> --sessionid <aocSessionId>
@@ -66,4 +74,5 @@ add a `-schedule 'cron(<write cron here>)'` argument to the deploy command.
 * Ability to customise Slack message with env variable
 * Use block kit to write slack message
 * Could add more complex logic in Slack by getting info from the
-* Process dynamoDB data to draw interesting graph of ranks/stars in time 
+* Process dynamoDB data to draw interesting graph of ranks/stars in time
+* Building within Docker so no need to install Java or Maven
