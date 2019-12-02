@@ -74,7 +74,8 @@ public class PollingFunction implements Function<Flux<Map>, Void> {
                             .slackToken(pollingConfiguration.getSlackToken())
                             .build())
                     .ifPresent(eventPublisher::publish);
-            ;
+
+            pollingEventDao.save(pollingEvent);
         });
         return null;
     }
