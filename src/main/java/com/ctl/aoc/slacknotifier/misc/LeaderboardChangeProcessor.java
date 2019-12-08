@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 public class LeaderboardChangeProcessor {
 
     private static final Logger logger = LogManager.getLogger(LeaderboardChangeProcessor.class);
+    private static Comparator<MemberEntry> comparator = Comparator.comparing(MemberEntry::getLocalScore)
+            .thenComparing(MemberEntry::getId);
 
     public static LeaderboardChangeEvent computeChanges(AocCompareEvent aocCompareEvent) {
         final LeaderboardChangeEvent.LeaderboardChangeEventBuilder builder = LeaderboardChangeEvent.builder();
@@ -23,8 +25,9 @@ public class LeaderboardChangeProcessor {
         final AocLeaderboardResponse oldResponse = aocCompareEvent.getFrom().getData();
         final AocLeaderboardResponse newResponse = aocCompareEvent.getTo().getData();
 
-        final Map<String, Integer> oldRank = rankMembers(oldResponse.getMembers().values(), Comparator.comparing(MemberEntry::getLocalScore));
-        final Map<String, Integer> newRank = rankMembers(newResponse.getMembers().values(), Comparator.comparing(MemberEntry::getLocalScore));
+
+        final Map<String, Integer> oldRank = rankMembers(oldResponse.getMembers().values(), comparator);
+        final Map<String, Integer> newRank = rankMembers(newResponse.getMembers().values(), comparator);
 
         newResponse.getMembers().values().forEach(newMember -> {
             final String memberId = newMember.getId();
@@ -36,7 +39,7 @@ public class LeaderboardChangeProcessor {
                     .orElse(0L);
 
             // the user has won at least one start if the timestamp have changed
-            if (oldLastStartTimestamp != newMember.getLastStarTimestamp()) {
+            if (oldRank.get(memberId) != newRank.get(memberId)) {
                 final LeaderboardMemberChange memberChange = LeaderboardMemberChange.builder()
                         .memberId(memberId)
                         .memberName(newMember.getName())
