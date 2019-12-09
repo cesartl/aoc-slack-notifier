@@ -81,7 +81,7 @@ public class SlackLeaderboardNotifier implements LeaderboardNotifier {
                         getDisplayName(memberEvent),
                         earnedStars,
                         rankChange))
-                .valueShortEnough(true) //TODO
+                .valueShortEnough(false) //TODO
                 .build();
     }
 

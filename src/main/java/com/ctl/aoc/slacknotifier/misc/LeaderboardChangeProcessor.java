@@ -13,8 +13,10 @@ import java.util.stream.Collectors;
 public class LeaderboardChangeProcessor {
 
     private static final Logger logger = LogManager.getLogger(LeaderboardChangeProcessor.class);
-    private static Comparator<MemberEntry> comparator = Comparator.comparing(MemberEntry::getLocalScore)
+    private static Comparator<MemberEntry> memberComparator = Comparator.comparing(MemberEntry::getLocalScore)
             .thenComparing(MemberEntry::getId);
+    private static Comparator<LeaderboardMemberChange> changeComparator = Comparator.comparing(LeaderboardMemberChange::getNewStars)
+            .thenComparing(LeaderboardMemberChange::getNewRank);
 
     public static LeaderboardChangeEvent computeChanges(AocCompareEvent aocCompareEvent) {
         final LeaderboardChangeEvent.LeaderboardChangeEventBuilder builder = LeaderboardChangeEvent.builder();
@@ -26,9 +28,10 @@ public class LeaderboardChangeProcessor {
         final AocLeaderboardResponse newResponse = aocCompareEvent.getTo().getData();
 
 
-        final Map<String, Integer> oldRank = rankMembers(oldResponse.getMembers().values(), comparator);
-        final Map<String, Integer> newRank = rankMembers(newResponse.getMembers().values(), comparator);
+        final Map<String, Integer> oldRank = rankMembers(oldResponse.getMembers().values(), memberComparator);
+        final Map<String, Integer> newRank = rankMembers(newResponse.getMembers().values(), memberComparator);
 
+        final List<LeaderboardMemberChange> memberChanges = new ArrayList<>();
         newResponse.getMembers().values().forEach(newMember -> {
             final String memberId = newMember.getId();
             // optional in case the member didn't exist previously
@@ -39,7 +42,7 @@ public class LeaderboardChangeProcessor {
                     .orElse(0L);
 
             // the user has won at least one start if the timestamp have changed
-            if (oldRank.get(memberId) != newRank.get(memberId)) {
+            if (!oldRank.get(memberId).equals(newRank.get(memberId)) || oldLastStartTimestamp != newMember.getLastStarTimestamp()) {
                 final LeaderboardMemberChange memberChange = LeaderboardMemberChange.builder()
                         .memberId(memberId)
                         .memberName(newMember.getName())
@@ -48,10 +51,11 @@ public class LeaderboardChangeProcessor {
                         .oldRank(Optional.ofNullable(oldRank.get(memberId)).orElse(999))
                         .oldStars(oldMember.map(MemberEntry::getStars).orElse(0))
                         .build();
-                builder.memberEvent(memberChange);
+                memberChanges.add(memberChange);
             }
         });
-
+        memberChanges.sort(changeComparator);
+        builder.memberEvents(memberChanges);
         return builder.build();
     }
 
