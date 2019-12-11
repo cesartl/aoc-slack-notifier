@@ -6,8 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="aoc-slack-notifier" />
         <module name="slack-notifier" />
+        <module name="aoc-slack-notifier" />
       </profile>
     </annotationProcessing>
   </component>

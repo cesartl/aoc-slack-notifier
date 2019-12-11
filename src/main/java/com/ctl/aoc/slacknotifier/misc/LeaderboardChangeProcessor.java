@@ -15,7 +15,8 @@ public class LeaderboardChangeProcessor {
     private static final Logger logger = LogManager.getLogger(LeaderboardChangeProcessor.class);
     private static Comparator<MemberEntry> memberComparator = Comparator.comparing(MemberEntry::getLocalScore)
             .thenComparing(MemberEntry::getId);
-    private static Comparator<LeaderboardMemberChange> changeComparator = Comparator.comparing(LeaderboardMemberChange::getNewStars)
+    private static Comparator<LeaderboardMemberChange> changeComparator = Comparator
+            .comparing((LeaderboardMemberChange m) -> m.getNewStars() - m.getOldStars()).reversed()
             .thenComparing(LeaderboardMemberChange::getNewRank);
 
     public static LeaderboardChangeEvent computeChanges(AocCompareEvent aocCompareEvent) {
