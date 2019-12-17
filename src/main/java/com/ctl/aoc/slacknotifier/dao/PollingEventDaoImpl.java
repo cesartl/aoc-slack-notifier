@@ -3,7 +3,7 @@ package com.ctl.aoc.slacknotifier.dao;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
+import com.amazonaws.services.dynamodbv2.datamodeling.QueryResultPage;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
@@ -47,10 +47,10 @@ public class PollingEventDaoImpl implements PollingEventDao {
                 .withHashKeyValues(PollingEvent.forHashValue(leaderBoardId, yearEvent))
                 .withRangeKeyCondition("timestamp", rangeKeyCondition)
                 .withScanIndexForward(false)
-                .withLimit(2); //for some reason it goes into infinite loop if this is set to one
+                .withLimit(1); //for some reason it goes into infinite loop if this is set to one
 
         logger.info("Running DynamoDB query ");
-        final PaginatedQueryList<PollingEvent> result = mapper.query(PollingEvent.class, expression);
-        return result.stream().findFirst();
+        final QueryResultPage<PollingEvent> result = mapper.queryPage(PollingEvent.class, expression);
+        return result.getResults().stream().findFirst();
     }
 }
