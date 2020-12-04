@@ -12,6 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +68,6 @@ public class SlackLeaderboardNotifier implements LeaderboardNotifier {
     }
 
     private Field buildAttachmentField(LeaderboardMemberChange memberEvent) {
-        final Field.FieldBuilder fieldBuilder = Field.builder();
         final int rankDiff = memberEvent.getOldRank() - memberEvent.getNewRank();
         final int earnedStars = memberEvent.getNewStars() - memberEvent.getOldStars();
         final String newPlace = Ordinal.ordinalSuffix(memberEvent.getNewRank());
@@ -76,11 +79,30 @@ public class SlackLeaderboardNotifier implements LeaderboardNotifier {
         } else {
             rankChange = String.format("= %s \uD83D\uDC51", newPlace); //= ${newPlace} 👑
         }
+        final List<String> times = memberEvent.getNewCompletedStars().stream()
+                .map(star -> {
+                    final String icon;
+                    if (star.getPart() == 1) {
+                        icon = ":star:";
+                    } else {
+                        icon = ":star::star:";
+                    }
+                    var dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(star.getTimestamp()), ZoneOffset.UTC);
+                    final String timestamp = DateTimeFormatter.ISO_LOCAL_TIME.format(dateTime);
+                    return icon + timestamp;
+                })
+                .collect(Collectors.toList());
+        final String timeInfo;
+        if (times.isEmpty()) {
+            timeInfo = "";
+        } else {
+            timeInfo = ":stopwatch:" + times.stream().collect(Collectors.joining(" ")) + ":stopwatch:";
+        }
         return Field.builder()
-                .value(String.format("*%s*+=%d\uD83C\uDF1F. %s",
+                .value(String.format("*%s*+=%d\uD83C\uDF1F. %s \t%s",
                         getDisplayName(memberEvent),
                         earnedStars,
-                        rankChange))
+                        rankChange, timeInfo))
                 .valueShortEnough(false) //TODO
                 .build();
     }

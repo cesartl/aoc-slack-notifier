@@ -3,6 +3,8 @@ package com.ctl.aoc.slacknotifier.model;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Represents the change for one member of a leaderboard between two polling events
  */
@@ -15,4 +17,5 @@ public class LeaderboardMemberChange {
     private int newStars;
     private int oldRank;
     private int newRank;
+    private List<CompletedStar> newCompletedStars;
 }

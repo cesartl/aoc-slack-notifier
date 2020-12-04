@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Encapsulate the logic to compare two {@link PollingEvent} and generate {@link LeaderboardChangeEvent}
@@ -33,7 +34,10 @@ public class LeaderboardChangeProcessor {
         final Map<String, Integer> newRank = rankMembers(newResponse.getMembers().values(), memberComparator);
 
         final List<LeaderboardMemberChange> memberChanges = new ArrayList<>();
-        newResponse.getMembers().values().forEach(newMember -> {
+        newResponse.getMembers().values()
+                .stream()
+                .filter(m -> m.getLocalScore() > 0)
+                .forEach(newMember -> {
             final String memberId = newMember.getId();
             // optional in case the member didn't exist previously
             final Optional<MemberEntry> oldMember = Optional.ofNullable(oldResponse.getMembers().get(memberId));
@@ -44,6 +48,18 @@ public class LeaderboardChangeProcessor {
 
             // the user has won at least one start if the timestamp have changed
             if (!oldRank.get(memberId).equals(newRank.get(memberId)) || oldLastStartTimestamp != newMember.getLastStarTimestamp()) {
+
+                var newCompletedStars = newMember.getCompletionByDay().entrySet()
+                        .stream()
+                        .flatMap(entry -> {
+                            var day1 = entry.getValue().day1Completed(entry.getKey()).stream();
+                            var day2 = entry.getValue().day2Completed(entry.getKey()).stream();
+                            return Stream.concat(day1, day2);
+                        })
+                        .filter(start -> start.getTimestamp() > oldLastStartTimestamp)
+                        .sorted(Comparator.comparing(CompletedStar::getTimestamp))
+                        .collect(Collectors.toList());
+
                 final LeaderboardMemberChange memberChange = LeaderboardMemberChange.builder()
                         .memberId(memberId)
                         .memberName(newMember.getName())
@@ -51,6 +67,7 @@ public class LeaderboardChangeProcessor {
                         .newStars(newMember.getStars())
                         .oldRank(Optional.ofNullable(oldRank.get(memberId)).orElse(999))
                         .oldStars(oldMember.map(MemberEntry::getStars).orElse(0))
+                        .newCompletedStars(newCompletedStars)
                         .build();
                 memberChanges.add(memberChange);
             }
