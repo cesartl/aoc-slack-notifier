@@ -39,7 +39,7 @@ functions:
   polling:
     handler: com.ctl.aoc.slacknotifier.handlers.PollingHandler
     events:
-      - schedule: ${opt:schedule, 'cron(0 */1 * * ? *)'}
+      - schedule: ${opt:schedule, 'cron(0 */4 * * ? *)'}
     environment:
       FUNCTION_NAME: pollingFunction
       AOC_SESSION_ID: ${opt:sessionid}

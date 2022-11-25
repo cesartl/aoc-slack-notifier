@@ -1,6 +1,9 @@
 package com.ctl.aoc.slacknotifier.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.seratch.jslack.Slack;
+import com.github.seratch.jslack.api.methods.SlackApiException;
+import com.github.seratch.jslack.api.webhook.Payload;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -27,5 +30,16 @@ class AocLeaderboardResponseTest {
                         assertThat(completion.getPart2().getTimestamp()).isEqualTo(1543652670);
                     });
                 });
+    }
+
+    @Test
+    void slack() throws IOException, SlackApiException {
+        final Payload.PayloadBuilder payloadBuilder = Payload.builder();
+        payloadBuilder.text("hello");
+
+        final Slack slack = Slack.getInstance();
+        var token = "XXXXX";
+        slack.methods(token)
+                .chatPostMessage(r -> r.channel("adventofcode").text("hello"));
     }
 }
